@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>拖拽</title>
+    <style>
+        #div1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background: yellow;
+        }
+        
+        #div2 {
+            position: absolute;
+            left: 300px;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background: yellowgreen;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <!-- doument这里必须使用双引号 -->
+    <div id="div1" v-drag.limit="document.body"></div>
+    <div id="div2" v-drag></div>
+    </div>
+</body>
+<script src="js/vue.js"></script>
+<script>
+    /* 
+                                                                                            创建自定义的指令
+                                                                                            */
+    Vue.directive('drag', {
+        //当指令绑定到元素上时执行
+        bind(el, binding) {
+            //el:当前指令绑定的dom元素
+            //binding:指令传入的参数、修饰符、值 v-指令名称：参数.修饰符=值
+
+            console.log(binding);
+
+            el.onmousedown = (e) => {
+                let disX = e.clientX - el.offsetLeft;
+                let disY = e.clientY - el.offsetTop;
+
+
+                document.onmousemove = (e) => {
+                    let L = e.clientX - disX;
+                    let T = e.clientY - disY;
+                    //限制拖拽的范围
+                    if (binding.modifiers.limit) {
+                        if (L < 0) {
+                            L = 0;
+                        }
+                    }
+                    el.style.left = L + 'px';
+                    el.style.top = T + 'px';
+                };
+                document.onmouseup = () => {
+                    document.onmousemove = null;
+                };
+                return false;
+            }
+        }
+    });
+    new Vue({
+        el: '#app',
+
+    })
+</script>
+
+</html>
